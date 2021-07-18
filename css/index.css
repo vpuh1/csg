@@ -1,0 +1,89 @@
+body {
+  background-color: #1a1b1c;
+  color: #fff;
+  font-size: 12pt;
+  font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
+  line-height: 1.6;
+}
+
+.container {
+  margin: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  max-width: 900px;
+  width: 100%;
+}
+
+.item {
+  display: flex;
+  width: 100%;
+  margin-bottom: 0px;
+  font-size: 0;
+  height: 50px;
+}
+
+.title {
+  font-size: 16pt;
+  display: inline-block;
+  width: 100%;
+  float: left;
+  line-height: 50px;
+  padding-left: 2em;
+}
+
+.date {
+  color: #999;
+  font-size: 12pt;
+  display: inline-block;
+  float: right;
+  line-height: 50px;
+  padding-right: 2em;
+}
+
+
+.header {
+  text-align: center;
+  padding-top: 10px;
+  display: block;
+  text-decoration: none;
+  color: #999;
+} 
+
+.footer {
+  color: #fff;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 9pt;
+  margin-bottom: 10px;
+}
+
+a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.title:hover {
+  color: #88bbf2;
+}
+
+.footer a:hover {
+  color: #88bbf2;
+}
+
+li {
+  list-style: none;
+}
+
+@media (max-width: 919px) {
+  .date { padding-right: 1.5em; }
+  .title { padding-left: 1.5em; }
+  .title { font-size: 12pt; }
+  .header { font-size: 9pt; }
+  .date { font-size: 9pt; }
+  .footer { font-size: 8pt; }
+}

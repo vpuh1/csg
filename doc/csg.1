@@ -1,0 +1,49 @@
+.\" Manpage for csg
+.\" Contact baxtiarovartem@gmail.com to correct errors
+.TH man 1 "19 July 2021" "0.1"
+.SH NAME
+csg \- static sites generator written in c
+.SH SYNOPSIS
+csg src dst
+.SH DESCRIPTION
+Csg is a very simple static sites generator, it converts files from Markdown to HTML from 
+.B src
+directory and puts result to 
+.B dst 
+directory.
+.PP
+It also generates main page for your site (default index.html) and puts it to the dst directory.
+.SH OPTIONS
+Csg does not take any options.
+.SH FILES
+.TP 15
+<installation-path>/csg/config.h 
+Main
+.B csg
+configuration file.
+.TP
+<installation-path>/css/pandoc.css
+Stylesheet for pandoc.
+.TP
+<installation-path>/css/index.css
+Stylesheet for the main page.
+.TP
+<installation-path>/html/mpheader.html
+Main page header.
+.TP
+<installation-path>/html/mpfooter.html
+Main page footer.
+.TP
+<installation-path>/html/header.html
+Header for the HTML files converted from Markdown with pandoc.
+.TP
+<installation-path>/html/footer.html
+Footer for the HTML files converted from Markdown with pandoc.
+
+.TP
+<installation-path>/html/template
+Template for pandoc.
+.SH SEE ALSO
+pandoc(1)
+.SH AUTHOR
+Artem Baxtiarov (baxtiarovartem@gmail.com)
