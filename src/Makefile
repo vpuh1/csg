@@ -10,17 +10,17 @@ MAN_PREFIX = /usr/share/man
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-csg: $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS)
+csg: $(OBJ) doc
+	$(CC) -o csg $(OBJ) $(CFLAGS)
 
 doc:
-	gzip $(MAN_DIR)/$(MAN_PAGE)
+	gzip <$(MAN_DIR)/$(MAN_PAGE) >$(MAN_DIR)/$(MAN_PAGE).gz
 
 .PHONY: clean
 
 clean:
 	rm -f $(OBJ) csg
-	gzip --decompress $(MAN_DIR)/$(MAN_PAGE)
+	rm -f $(MAN_DIR)/$(MAN_PAGE).gz
 
 .PHONY: install
 
@@ -28,7 +28,7 @@ install-man:
 	mkdir -p ${MAN_PREFIX}/man1
 	cp $(MAN_DIR)/$(MAN_PAGE).gz $(DESTDIR)$(MAN_PREFIX)/man1/$(MAN_PAGE).gz
 
-install: csg doc install-man
+install: csg install-man
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
 	cp $< $(DESTDIR)$(PREFIX)/bin/csg
 

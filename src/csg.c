@@ -53,7 +53,7 @@ char *exec_output(char *cmd) {
     read(fd[0], output, ARG_MAX);
   }
 
-  output[strlen(output)] = '\0';
+  output[strlen(output)] = '\0'; /* don't need \n */
 
   return output;
 }
@@ -95,8 +95,8 @@ void get_info(int nart, art *article) { /* get title and date */
     char *title = exec_output(get_title);
     char *date = exec_output(get_date);
 
-    free(get_title);
-    free(get_date);
+    //free(get_title);
+    //free(get_date);
 
     title[strlen(title) - 1]  = '\0'; /* we don't need both \n and \0 */
     date[strlen(date) - 1]  = '\0'; /* the same */
@@ -104,8 +104,8 @@ void get_info(int nart, art *article) { /* get title and date */
     strcpy(article[i].title, title);
     strcpy(article[i].date, date);
 
-    free(title);
-    free(date);
+    //free(title);
+    //free(date);
   }
 }
 
@@ -132,7 +132,6 @@ void gen_dst(int nart, art *article, char *dstdir) { /* generate dst path */
     int tmplen = strlen(article[i].dst);
     strcpy(article[i].dst + strlen(article[i].dst), name);
     int k = tmplen + strlen(name);
-    free(name);
 
     article[i].dst[k - 2] = 'h';
     article[i].dst[k - 1] = 't';
@@ -178,7 +177,6 @@ void convert(art article, char *article_css, char *article_template,
 
   printf("%s\n", convert);
 
-  free(convert);
   pid_t p = fork();
 
   if(p == -1) {
@@ -205,8 +203,6 @@ char *read_mp (char *filename) { /* reads mainpage header/footer */
   }
 
   buff[i] = '\0';
-  free(buff);
-
   return buff;
 }
 
@@ -280,8 +276,6 @@ int main(int argc, char **argv) {
 
   mp[strlen(mp)] = '/';
   strcpy(mp + strlen(mp), mp_name_t);
-
-  printf("%s\n", mp);
 
   char *articles = exec_output(list_md);
   int nart = get_nart(articles, strlen(articles));
