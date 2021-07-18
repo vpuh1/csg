@@ -15,4 +15,5 @@ Clone this repo, after that
 ```
 make && sudo make install
 ```
+Edit `css/header.css`, `css/footer.css`, `css/mpheader.css`and `css/mpfooter.css`.
 If you want to use csg outside of the repo, you need to change `confloc` to absolute path in `src/config.h`.
