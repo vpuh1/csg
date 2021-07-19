@@ -21,7 +21,17 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#ifdef __linux__
 #include <linux/limits.h>
+#endif
+
+#ifdef __FreeBSD__
+#include <sys/syslimits.h>
+#endif
+
+#ifdef __APPLE__
+#include <sys/syslimits.h>
+#endif
 
 #include "csg.h"
 #include "config.h"
