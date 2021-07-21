@@ -33,7 +33,7 @@ install: csg install-man
 	cp $< $(DESTDIR)$(PREFIX)/bin/csg
 
 test: csg
-	csg ../test ../test
+	./csg ../test ../test
 
 .PHONY: uninstall
 
