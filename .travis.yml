@@ -5,21 +5,27 @@ os:
 - osx
 - freebsd
 
-addons:
-  apt:
-    packages: 
-      - pandoc
-  homebrew:
-    packages:
-      - pandoc
-  pkg:
-      - hs-pandoc
-
 compiler: gcc
 
-before_install: 
-- cd src
+matrix:
+  include:
+    -os: linux
+    addons:
+      apt:
+        packages:
+          - pandoc
+    -os: osx
+    addons:
+      homebrew:
+        packages:
+          - pandoc
+    -os: freebsd
+    addons:
+      pkg:
+        - hs-pandoc
 
 script:
-- make
+- cd src
+- if [ "$TRAVIS_OS_NAME" = "freebsd" ]; then gmake; fi
+- if [ "$TRAVIS_OS_NAME" != "freebsd" ]; then make; fi
 - make test
