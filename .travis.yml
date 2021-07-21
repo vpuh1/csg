@@ -12,14 +12,11 @@ addons:
   homebrew:
     packages:
       - pandoc
-  pkg:
-    packages:
-    - hs-pandoc
-
 compiler: gcc
 
 script:
 - cd src
+- if [ "$TRAVIS_OS_NAME" = "freebsd" ]; then pkg install hs-pandoc; fi
 - if [ "$TRAVIS_OS_NAME" = "freebsd" ]; then gmake; fi
 - if [ "$TRAVIS_OS_NAME" != "freebsd" ]; then make; fi
 - make test
