@@ -20,7 +20,6 @@ jobs:
 compiler: gcc
 
 script:
-- cd src
 - if [ "$TRAVIS_OS_NAME" = "freebsd" ]; then gmake; fi
 - if [ "$TRAVIS_OS_NAME" != "freebsd" ]; then make; fi
 - make test
