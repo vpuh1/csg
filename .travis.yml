@@ -1,20 +1,21 @@
 language: c
 
-os:
-  - linux
-  - osx
-  - freebsd
+jobs:
+  include:
+    - os: linux
+    addons:
+      apt:
+        packages:
+          - pandoc
+    - os: osx
+    homebrew:
+      packages:
+        - pandoc
+    - os: freebsd
+    pkg:
+      packages:
+        - hs-pandoc
 
-addons:
-  apt:
-    packages:
-      - pandoc
-  homebrew:
-    packages:
-      - pandoc
-  pkg:
-    packages:
-      - hs-pandoc
 compiler: gcc
 
 script:
