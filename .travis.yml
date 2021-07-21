@@ -16,6 +16,7 @@ matrix:
     - os: freebsd
     addons:
       pkg:
+        packages:
         - hs-pandoc
 
 script:
