@@ -3,6 +3,7 @@ language: c
 os:
 - linux
 - osx
+- freebsd
 
 addons:
   apt:
@@ -10,6 +11,8 @@ addons:
       - pandoc
   homebrew:
     packages:
+      - pandoc
+  pkg:
       - pandoc
 
 compiler: gcc
