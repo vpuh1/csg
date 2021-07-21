@@ -1,6 +1,16 @@
 language: c
-before_install: 
-- sudo apt-get -y install pandoc
-- cd src/
+
+os:
+- linux
+- osx
+
 compiler: gcc
-script: make
+
+before_install: 
+- if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install pandoc; fi
+- if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get -y install pandoc; fi
+- cd src
+
+script:
+- make
+- make test
