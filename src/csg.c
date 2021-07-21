@@ -23,10 +23,8 @@
 
 #ifdef __APPLE__
 #include <sys/syslimits.h>
-
 #elif __linux__
 #include <linux/limits.h>
-
 #elif __FreeBSD__
 #include <sys/syslimits.h>
 #endif

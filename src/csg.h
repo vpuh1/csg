@@ -15,13 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+#ifdef __APPLE__
+#include <sys/syslimits.h>
+#elif __linux__
 #include <linux/limits.h>
+#elif __FreeBSD__
+#include <sys/syslimits.h>
+#endif
 
 #define MAX_TITLE_LEN NAME_MAX
 #define MAX_DATE_LEN NAME_MAX
-#define MAX_SRC_LEN NAME_MAX
-#define MAX_DST_LEN NAME_MAX
+#define MAX_SRC_LEN PATH_MAX
+#define MAX_DST_LEN PATH_MAX
 
 typedef struct {
   char title[MAX_TITLE_LEN]; /* Article title */
