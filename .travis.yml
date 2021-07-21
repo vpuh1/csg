@@ -1,4 +1,4 @@
 language: c
-install: pandoc
+before_install: sudo apt-get -y install pandoc
 compiler: gcc
 script: make
