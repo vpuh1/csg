@@ -32,6 +32,9 @@ install: csg install-man
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
 	cp $< $(DESTDIR)$(PREFIX)/bin/csg
 
+test: csg
+	csg ../test ../test
+
 .PHONY: uninstall
 
 uninstall-man:
