@@ -1,23 +1,22 @@
 language: c
-compiler: gcc
 
-matrix:
-  include:
-    - os: linux
-    addons:
-      apt:
-        packages:
-          - pandoc
-    - os: osx
-    addons:
-      homebrew:
-        packages:
-          - pandoc
-    - os: freebsd
-    addons:
-      pkg:
-        packages:
-        - hs-pandoc
+os:
+  - linux
+  - osx
+  - freebsd
+
+addons:
+  apt:
+    packages:
+      - pandoc
+  homebrew:
+    packages:
+      - pandoc
+  pkg:
+    packages:
+    - hs-pandoc
+
+compiler: gcc
 
 script:
 - cd src
