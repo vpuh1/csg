@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-char *confloc = "/trash/edu/csg"; /* config location, change it to absolute path 
+char *confloc = "."; /* config location, change it to absolute path 
                        * if you want to use csg outside of installation directory */
 
 char *highlight_theme = "breezedark"; /* Available themes: pygments, kate, monochrome, breezedark, espresso, zenburn, haddock, tango.
