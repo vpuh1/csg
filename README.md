@@ -1,5 +1,6 @@
 # Csg
-Static sites generator written in C.
+![build](https://travis-ci.com/vpuh1/csg.svg?branch=main)
+Static sites generator written in C. 
 ### Description
 Csg is a very simple static sites generator. It converts files written in Markdown to HTML using `pandoc` and generates main page
 with list of articles.
