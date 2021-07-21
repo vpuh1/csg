@@ -31,7 +31,7 @@
 
 
 #include "csg.h"
-#include "config.h"
+#include "../config.h"
 
 char *exec_output(char *cmd) {
   char *output = (char *) malloc(sizeof(char) * ARG_MAX);
@@ -102,8 +102,8 @@ void get_info(int nart, art *article) { /* get title and date */
     char *title = exec_output(get_title);
     char *date = exec_output(get_date);
 
-    //free(get_title);
-    //free(get_date);
+    free(get_title);
+    free(get_date);
 
     title[strlen(title) - 1]  = '\0'; /* we don't need both \n and \0 */
     date[strlen(date) - 1]  = '\0'; /* the same */
@@ -111,8 +111,8 @@ void get_info(int nart, art *article) { /* get title and date */
     strcpy(article[i].title, title);
     strcpy(article[i].date, date);
 
-    //free(title);
-    //free(date);
+    free(title);
+    free(date);
   }
 }
 
@@ -153,23 +153,23 @@ void gen_pandoc_cmd(char *buff, char *article_header, char *article_footer,
   if(strcmp(article_header, "") == 0) {
     if(strcmp(article_footer, "") == 0) {
       sprintf(buff, "pandoc -f markdown -t html -s %s -o %s --highlight-style"
-              " breezedark --css=%s --template=%s", article.src, article.dst,
+              "=breezedark --css=%s --template=%s", article.src, article.dst,
               article_css, article_template);
     } else {
       sprintf(buff, "pandoc -f markdown -t html -s -A %s %s -o %s"
-              " --highlight-style breezedark --css=%s --template=%s",
+              " --highlight-style=breezedark --css=%s --template=%s",
               article_footer, article.src, article.dst, article_css,
               article_template);
     }
   } else {
     if(strcmp(article_footer, "") == 0) {
       sprintf(buff, "pandoc -f markdown -t html -s -B %s %s -o %s"
-              " --highlight-style breezedark --css=%s --template=%s",
+              " --highlight-style=breezedark --css=%s --template=%s",
               article_header, article.src, article.dst, article_css,
               article_template);
     } else {
       sprintf(buff, "pandoc -f markdown -t html -s -B %s -A %s %s -o %s"
-              " --highlight-style breezedark --css=%s --template=%s",
+              " --highlight-style=breezedark --css=%s --template=%s",
               article_header, article_footer, article.src, article.dst,
               article_css, article_template);
     }

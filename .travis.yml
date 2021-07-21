@@ -8,12 +8,14 @@ jobs:
           packages:
             - pandoc
     - os: osx
-      homebrew:
-        packages:
-          - pandoc
+      addons:
+        homebrew:
+          packages:
+            - pandoc
     - os: freebsd
-      pkg:
-        - hs-pandoc
+      addons:
+        pkg:
+          - hs-pandoc
 
 compiler: gcc
 

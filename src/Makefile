@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-I.
+CFLAGS=-I..
 DEPS = csg.h config.h
 OBJ = csg.o
 MAN_DIR = ../doc
