@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-char *confloc = "."; /* config location, change it to absolute path 
+char *confloc = ".."; /* config location, change it to absolute path 
                        * if you want to use csg outside of installation directory */
 char *mp_title = "csg"; /* mainpage title */
 char *mp_css_t = "%s/css/index.css"; /* mainpage css */
