@@ -12,12 +12,12 @@ addons:
   homebrew:
     packages:
       - pandoc
+  pkg:
+    packages:
+      - hs-pandoc
 compiler: gcc
 
 script:
-- if [ "$TRAVIS_OS_NAME" = "freebsd" ]; then sudo echo "IGNORE_OSVERSION=yes" >> /etc/rc.conf; fi
-- if [ "$TRAVIS_OS_NAME" = "freebsd" ]; then sudo pkg update; fi
-- if [ "$TRAVIS_OS_NAME" = "freebsd" ]; then sudo pkg install hs-pandoc; fi
 - cd src
 - if [ "$TRAVIS_OS_NAME" = "freebsd" ]; then gmake; fi
 - if [ "$TRAVIS_OS_NAME" != "freebsd" ]; then make; fi
