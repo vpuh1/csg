@@ -15,6 +15,7 @@ addons:
 compiler: gcc
 
 script:
+- if [ "$TRAVIS_OS_NAME" = "freebsd" ]; then sudo pkg update; fi
 - if [ "$TRAVIS_OS_NAME" = "freebsd" ]; then sudo pkg install hs-pandoc; fi
 - cd src
 - if [ "$TRAVIS_OS_NAME" = "freebsd" ]; then gmake; fi
