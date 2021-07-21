@@ -13,7 +13,7 @@ addons:
     packages:
       - pandoc
   pkg:
-      - pandoc
+      - hs-pandoc
 
 compiler: gcc
 
