@@ -9,17 +9,17 @@ compiler: gcc
 
 matrix:
   include:
-    -os: linux
+    - os: linux
     addons:
       apt:
         packages:
           - pandoc
-    -os: osx
+    - os: osx
     addons:
       homebrew:
         packages:
           - pandoc
-    -os: freebsd
+    - os: freebsd
     addons:
       pkg:
         - hs-pandoc
