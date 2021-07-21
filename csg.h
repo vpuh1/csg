@@ -25,12 +25,14 @@
 
 #define MAX_TITLE_LEN NAME_MAX
 #define MAX_DATE_LEN NAME_MAX
+#define MAX_NAME_LEN NAME_MAX
 #define MAX_SRC_LEN PATH_MAX
 #define MAX_DST_LEN PATH_MAX
 
 typedef struct {
   char title[MAX_TITLE_LEN]; /* Article title */
   char date[MAX_DATE_LEN];  /* Article date */
+  char name[MAX_NAME_LEN]; /* file name */
   char src[MAX_SRC_LEN]; /* Source path */
   char dst[MAX_DST_LEN]; /* Destination path */
 } art; /* Article */

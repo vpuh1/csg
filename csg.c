@@ -29,9 +29,8 @@
 #include <sys/syslimits.h>
 #endif
 
-
 #include "csg.h"
-#include "../config.h"
+#include "config.h"
 
 char *exec_output(char *cmd) {
   char *output = (char *) malloc(sizeof(char) * ARG_MAX);
@@ -128,7 +127,6 @@ void gen_dst(int nart, art *article, char *dstdir) { /* generate dst path */
         break;
       } 
     }
-
     strcpy(article[i].dst, dstdir);
 
     if(article[i].dst[strlen(dstdir) - 1] != '/') {
@@ -145,42 +143,53 @@ void gen_dst(int nart, art *article, char *dstdir) { /* generate dst path */
     article[i].dst[k] = 'm';
     article[i].dst[k + 1] = 'l';
     article[i].dst[k + 2] = '\0';
+
+    k = strlen(name);
+    name[k- 2] = 'h';
+    name[k - 1] = 't';
+    name[k] = 'm';
+    name[k + 1] = 'l';
+    name[k + 2] = '\0';
+
+    strcpy(article[i].name, name);
   }
 }
 
 void gen_pandoc_cmd(char *buff, char *article_header, char *article_footer,
-                    art article, char *article_css, char *article_template) {
+                    art article, char *article_css, char *article_template,
+                    char *highlight_theme) {
   if(strcmp(article_header, "") == 0) {
     if(strcmp(article_footer, "") == 0) {
-      sprintf(buff, "pandoc -f markdown -t html -s %s -o %s --highlight-style"
-              "=breezedark --css=%s --template=%s", article.src, article.dst,
-              article_css, article_template);
+      sprintf(buff, "pandoc -f markdown -t html -s %s -o %s --highlight-style="
+              "%s --css=%s --template=%s", article.src, article.dst,
+              highlight_theme, article_css, article_template);
     } else {
       sprintf(buff, "pandoc -f markdown -t html -s -A %s %s -o %s"
-              " --highlight-style=breezedark --css=%s --template=%s",
-              article_footer, article.src, article.dst, article_css,
+              " --highlight-style=%s --css=%s --template=%s", article_footer,
+              article.src, article.dst, highlight_theme, article_css,
               article_template);
     }
   } else {
     if(strcmp(article_footer, "") == 0) {
       sprintf(buff, "pandoc -f markdown -t html -s -B %s %s -o %s"
-              " --highlight-style=breezedark --css=%s --template=%s",
-              article_header, article.src, article.dst, article_css,
+              " --highlight-style=%s --css=%s --template=%s", article_header,
+              article.src, article.dst, article_css, highlight_theme,
               article_template);
     } else {
       sprintf(buff, "pandoc -f markdown -t html -s -B %s -A %s %s -o %s"
-              " --highlight-style=breezedark --css=%s --template=%s",
-              article_header, article_footer, article.src, article.dst,
+              " --highlight-style=%s --css=%s --template=%s", article_header,
+              article_footer, article.src, article.dst, highlight_theme,
               article_css, article_template);
     }
   }
 }
 
 void convert(art article, char *article_css, char *article_template,
-             char *article_header, char *article_footer) {
+             char *article_header, char *article_footer, 
+             char *highlight_theme) {
   char *convert = (char *) malloc(sizeof(char) * ARG_MAX);
   gen_pandoc_cmd(convert, article_header, article_footer, article, article_css,
-      article_template);
+                 article_template, highlight_theme);
 
   printf("%s\n", convert);
 
@@ -233,7 +242,7 @@ void gen_main_page(int nart, art *article, char *path, char *css,
   int i;
   for(i = 0; i < nart; i++) {
     fprintf(index, "<li class=\"item\">\n");
-    fprintf(index, "<a href=\"%s\" class=\"title\">%s</a>\n", article[i].dst,
+    fprintf(index, "<a href=\"%s\" class=\"title\">%s</a>\n", article[i].name,
             article[i].title);
     fprintf(index, "<div class=\"date\">%s</div>\n", article[i].date);
     fprintf(index, "<li/>\n");
@@ -303,7 +312,7 @@ int main(int argc, char **argv) {
 
   for(i = 0; i < nart; i++) {
     convert(article[i], article_css, article_template, article_header, 
-            article_footer);
+            article_footer, highlight_theme);
   }
 
   gen_main_page(nart, article, mp, mp_css, mp_header, mp_footer);

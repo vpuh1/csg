@@ -16,8 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-char *confloc = ".."; /* config location, change it to absolute path 
+char *confloc = "/trash/edu/csg"; /* config location, change it to absolute path 
                        * if you want to use csg outside of installation directory */
+
+char *highlight_theme = "breezedark"; /* Available themes: pygments, kate, monochrome, breezedark, espresso, zenburn, haddock, tango.
+                                        You can provide your own custom theme:
+                                          pandoc --print-highlight-style pygments > my.theme
+                                        Then edit my.theme. */
+
 char *mp_title = "csg"; /* mainpage title */
 char *mp_css_t = "%s/css/index.css"; /* mainpage css */
 char *mp_header_t = "%s/html/mpheader.html"; /* mainpage header */
