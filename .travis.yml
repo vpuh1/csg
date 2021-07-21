@@ -3,17 +3,17 @@ language: c
 jobs:
   include:
     - os: linux
-    addons:
-      apt:
+      addons:
+        apt:
+          packages:
+            - pandoc
+    - os: osx
+      homebrew:
         packages:
           - pandoc
-    - os: osx
-    homebrew:
-      packages:
-        - pandoc
     - os: freebsd
-    pkg:
-      - hs-pandoc
+      pkg:
+        - hs-pandoc
 
 compiler: gcc
 
