@@ -13,8 +13,7 @@ jobs:
         - pandoc
     - os: freebsd
     pkg:
-      packages:
-        - hs-pandoc
+      - hs-pandoc
 
 compiler: gcc
 
