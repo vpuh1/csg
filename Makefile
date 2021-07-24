@@ -39,6 +39,7 @@ install: csg install-man
 	cp -r css /etc/csg/
 
 test: csg
+	mkdir -p test
 	./test.sh
 	./csg test test
 
