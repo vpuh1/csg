@@ -34,6 +34,8 @@
 #include "csg.h"
 #include "config.h"
 
+#define ARG_MAX sysconf(_SC_ARG_MAX)
+
 char *list_md_t = "find %s | grep '.md$'"; /* list all .md files */
 char *make_dir_t = "mkdir -p %s"; /* make dst dir */
 char *get_title_t = "cat %s | grep title | cut -c 8-"; /* 'title: ' = 7 */

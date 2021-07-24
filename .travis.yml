@@ -22,4 +22,5 @@ compiler: gcc
 script:
 - if [ "$TRAVIS_OS_NAME" = "freebsd" ]; then gmake; fi
 - if [ "$TRAVIS_OS_NAME" != "freebsd" ]; then make; fi
-- make test
+- if [ "$TRAVIS_OS_NAME" = "freebsd" ]; then gmake test; fi
+- if [ "$TRAVIS_OS_NAME" != "freebsd" ]; then make test; fi
