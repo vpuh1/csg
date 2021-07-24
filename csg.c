@@ -1,7 +1,6 @@
 /*
  * csg -- simple static sites generator 
- * Copyright (C) 2021 Artem Baxtiarov
- *
+ * Copyright (C) 2021 Artem Baxtiarov *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,7 +19,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <linux/limits.h>
 #include <limits.h>
 #include <sys/param.h>
 #include <sys/wait.h>

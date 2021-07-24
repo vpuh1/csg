@@ -14,8 +14,8 @@ csg: $(OBJ)
 	#gzip <$(MAN_DIR)$(MAN_PAGE) >$(MAN_DIR)$(MAN_PAGE).gz
 	mkdir -p $(HOME)/.csg
 	cp config/ucsgrc $(HOME)/.csg/csgrc
-	cp -r html $(HOME)/.csg/
-	cp -r css $(HOME)/.csg/
+	cp -r html $(HOME)/.csg/html
+	cp -r css $(HOME)/.csg/css
 
 .PHONY: clean
 
