@@ -1,5 +1,5 @@
 # Csg
-![build](https://travis-ci.com/vpuh1/csg.svg?branch=main)  
+[![Build Status](https://travis-ci.com/vpuh1/csg.svg?branch=main)](https://travis-ci.com/vpuh1/csg)  
 Static sites generator written in C. 
 ### Description
 Csg is a very simple static sites generator. It converts files written in Markdown to HTML using `pandoc` and generates main page
