@@ -20,6 +20,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <linux/limits.h>
+#include <limits.h>
+#include <sys/param.h>
+#include <sys/wait.h>
 
 #ifdef __APPLE__
 #include <sys/syslimits.h>
@@ -31,6 +35,11 @@
 
 #include "csg.h"
 #include "config.h"
+
+char *list_md_t = "find %s | grep '.md$'"; /* list all .md files */
+char *make_dir_t = "mkdir -p %s"; /* make dst dir */
+char *get_title_t = "cat %s | grep title | cut -c 8-"; /* 'title: ' = 7 */
+char *get_date_t = "cat %s | grep date | cut -c 7-"; /* 'date: ' = 6 */
 
 char *exec_output(char *cmd) {
   char *output = (char *) malloc(sizeof(char) * ARG_MAX);
@@ -49,17 +58,18 @@ char *exec_output(char *cmd) {
   }
 
   if(p == 0) {
-    close(fd[0]);
     dup2(fd[1], STDOUT_FILENO);
+    close(fd[0]);
     close(fd[1]);
     execlp("sh", "sh", "-c", cmd, NULL);
+    fprintf(stderr, "csg: execlp error\n");
     exit(EXIT_FAILURE);
   } else {
     close(fd[1]);
-    read(fd[0], output, ARG_MAX);
+    int nbytes = read(fd[0], output, ARG_MAX);
+    output[nbytes] = '\0';
+    wait(NULL);
   }
-
-  output[strlen(output)] = '\0'; /* don't need \n */
 
   return output;
 }
@@ -104,8 +114,8 @@ void get_info(int nart, art *article) { /* get title and date */
     free(get_title);
     free(get_date);
 
-    title[strlen(title) - 1]  = '\0'; /* we don't need both \n and \0 */
-    date[strlen(date) - 1]  = '\0'; /* the same */
+    //title[strlen(title) - 1]  = '\0'; /* we don't need both \n and \0 */
+    //date[strlen(date) - 1]  = '\0'; /* the same */
 
     strcpy(article[i].title, title);
     strcpy(article[i].date, date);
@@ -153,52 +163,50 @@ void gen_dst(int nart, art *article, char *dstdir) { /* generate dst path */
 
     strcpy(article[i].name, name);
   }
+  free(name);
 }
 
-void gen_pandoc_cmd(char *buff, char *article_header, char *article_footer,
-                    art article, char *article_css, char *article_template,
-                    char *highlight_theme) {
-  if(strcmp(article_header, "") == 0) {
-    if(strcmp(article_footer, "") == 0) {
+void gen_pandoc_cmd(char *buff, art article) {
+  if(strcmp(conf.art_header, "") == 0) {
+    if(strcmp(conf.art_footer, "") == 0) {
       sprintf(buff, "pandoc -f markdown -t html -s %s -o %s --highlight-style="
               "%s --css=%s --template=%s", article.src, article.dst,
-              highlight_theme, article_css, article_template);
+              conf.highlight_theme, conf.art_css, conf.art_template);
     } else {
       sprintf(buff, "pandoc -f markdown -t html -s -A %s %s -o %s"
-              " --highlight-style=%s --css=%s --template=%s", article_footer,
-              article.src, article.dst, highlight_theme, article_css,
-              article_template);
+              " --highlight-style=%s --css=%s --template=%s", conf.art_footer,
+              article.src, article.dst, conf.highlight_theme, conf.art_css,
+              conf.art_template);
     }
   } else {
-    if(strcmp(article_footer, "") == 0) {
+    if(strcmp(conf.art_footer, "") == 0) {
       sprintf(buff, "pandoc -f markdown -t html -s -B %s %s -o %s"
-              " --highlight-style=%s --css=%s --template=%s", article_header,
-              article.src, article.dst, article_css, highlight_theme,
-              article_template);
+              " --highlight-style=%s --css=%s --template=%s", conf.art_header,
+              article.src, article.dst, conf.art_css, conf.highlight_theme,
+              conf.art_template);
     } else {
       sprintf(buff, "pandoc -f markdown -t html -s -B %s -A %s %s -o %s"
-              " --highlight-style=%s --css=%s --template=%s", article_header,
-              article_footer, article.src, article.dst, highlight_theme,
-              article_css, article_template);
+              " --highlight-style=%s --css=%s --template=%s", conf.art_header,
+              conf.art_footer, article.src, article.dst, conf.highlight_theme,
+              conf.art_css, conf.art_template);
     }
   }
 }
 
-void convert(art article, char *article_css, char *article_template,
-             char *article_header, char *article_footer, 
-             char *highlight_theme) {
+void convert(art article) {
   char *convert = (char *) malloc(sizeof(char) * ARG_MAX);
-  gen_pandoc_cmd(convert, article_header, article_footer, article, article_css,
-                 article_template, highlight_theme);
+  gen_pandoc_cmd(convert, article);
 
   printf("%s\n", convert);
 
   pid_t p = fork();
 
   if(p == -1) {
+    free(convert);
     fprintf(stderr, "csg: cannot create pid: %d\n", p);
     exit(1);
   } else if(p == 0){
+    free(convert);
     execlp("sh", "sh", "-c", convert, NULL);
   } else return;
 }
@@ -222,18 +230,17 @@ char *read_mp (char *filename) { /* reads mainpage header/footer */
   return buff;
 }
 
-void gen_main_page(int nart, art *article, char *path, char *css,
-                   char *mp_header, char *mp_footer) {
-  char *hdata = read_mp(mp_header);
-  char *fdata = read_mp(mp_footer);
+void gen_main_page(int nart, art *article, char *path) {
+  char *hdata = read_mp(conf.mp_header);
+  char *fdata = read_mp(conf.mp_footer);
 
   FILE *index = fopen(path, "w");
 
   fprintf(index, "<!DOCTYPE html>\n<head>\n<meta charset=\"UTF-8\">\n");
   fprintf(index, "<meta name=\"viewport\" content=\"width=device-width"
           " initial-scale=1.0\">\n");
-  fprintf(index, "<title>%s</title>\n", mp_title);
-  fprintf(index, "<link rel=\"stylesheet\" href=\"%s\">\n</head>\n", css);
+  fprintf(index, "<title>%s</title>\n", conf.mp_title);
+  fprintf(index, "<link rel=\"stylesheet\" href=\"%s\">\n</head>\n", conf.mp_css);
   fprintf(index, "<body>\n<div class=\"container\">\n");
 
   if(hdata)
@@ -265,34 +272,21 @@ int main(int argc, char **argv) {
     printf("\tdst: destination directory for converted files\n");
     exit(1);
   }
+  init_config_values();
+  open_config();
 
   /* list all .md files in src directory */
   char *list_md = (char *) malloc(sizeof(char) * ARG_MAX);
   sprintf(list_md, list_md_t, argv[1]);
 
-  char *article_css = (char *) malloc(sizeof(char) * PATH_MAX);
-  char *article_template = (char *) malloc(sizeof(char) * PATH_MAX);
-  char *article_header = (char *) malloc(sizeof(char) * PATH_MAX);
-  char *article_footer = (char *) malloc(sizeof(char) * PATH_MAX);
-
-  char *mp_css = (char *) malloc(sizeof(char) * PATH_MAX);
-  char *mp_header = (char *) malloc(sizeof(char) * PATH_MAX);
-  char *mp_footer = (char *) malloc(sizeof(char) * PATH_MAX);
   char *mp = (char *) malloc(sizeof(char) * PATH_MAX);
 
-  sprintf(article_css, article_css_t, confloc);
-  sprintf(article_template, article_template_t, confloc); 
-  sprintf(article_header, article_header_t, confloc);
-  sprintf(article_footer, article_footer_t, confloc);
-
-  sprintf(mp_css, mp_css_t, confloc);
-  sprintf(mp_header, mp_header_t, confloc);
-  sprintf(mp_footer, mp_footer_t, confloc);
   realpath(argv[2], mp);
-
-  mp[strlen(mp)] = '/';
-  strcpy(mp + strlen(mp), mp_name_t);
-
+  int tmplen = strlen(mp);
+  mp[tmplen] = '/';
+  mp[tmplen + 1] = '\0';
+  strcpy(mp + strlen(mp), conf.mp_name);
+  mp[strlen(mp)] = '\0';
   char *articles = exec_output(list_md);
   int nart = get_nart(articles, strlen(articles));
 
@@ -311,21 +305,13 @@ int main(int argc, char **argv) {
   gen_dst(nart, article, argv[2]);
 
   for(i = 0; i < nart; i++) {
-    convert(article[i], article_css, article_template, article_header, 
-            article_footer, highlight_theme);
+    convert(article[i]);
   }
 
-  gen_main_page(nart, article, mp, mp_css, mp_header, mp_footer);
+  gen_main_page(nart, article, mp);
 
   free(list_md);
-  free(article_css);
-  free(article_template);
-  free(article_header);
-  free(article_footer);
-  free(mp_css);
   free(mp);
-  free(mp_header);
-  free(mp_footer);
 
   return 0;
 }

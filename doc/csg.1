@@ -1,6 +1,6 @@
 .\" Manpage for csg
 .\" Contact baxtiarovartem@gmail.com to correct errors
-.TH man 1 "19 July 2021" "0.1"
+.TH man 1 "July 2021" "0.2"
 .SH NAME
 csg \- static sites generator written in c
 .SH SYNOPSIS
@@ -16,33 +16,71 @@ It also generates main page for your site (default index.html) and puts it to th
 .SH OPTIONS
 Csg does not take any options.
 .SH FILES
+You can find default and system wide csg files under /etc/csg and user csg files under ~/.csg.
 .TP 15
-<installation-path>/csg/config.h 
-Main
-.B csg
-configuration file.
+/etc/csg/css/pandoc.css 
+.B Default
+stylesheet for pandoc.
 .TP
-<installation-path>/css/pandoc.css
-Stylesheet for pandoc.
+~/.csg/css/pandoc.css 
+.B User
+stylesheet for pandoc.
 .TP
-<installation-path>/css/index.css
-Stylesheet for the main page.
+/etc/csg/css/index.css
+.B Default
+stylesheet for the main page. 
 .TP
-<installation-path>/html/mpheader.html
-Main page header.
+~/.csg/css/index.css
+.B User
+stylesheet for the main page. 
 .TP
-<installation-path>/html/mpfooter.html
-Main page footer.
+/etc/csg/html/main_page_header.html
+.B Default
+main page header.
 .TP
-<installation-path>/html/header.html
-Header for the HTML files converted from Markdown with pandoc.
+~/.csg/html/main_page_header.html
+.B User
+main page header.
 .TP
-<installation-path>/html/footer.html
-Footer for the HTML files converted from Markdown with pandoc.
-
+/etc/csg/html/main_page_footer.html
+.B Default
+main page footer.
 .TP
-<installation-path>/html/template
-Template for pandoc.
+~/.csg/html/main_page_footer.html
+.B User
+main page footer.
+.TP
+/etc/csg/html/main_page_footer.html
+.B Default
+main page footer.
+.TP
+~/.csg/html/main_page_footer.html
+.B User
+main page footer.
+.TP
+/etc/csg/html/header.html
+.B Default
+header for the HTML files converted from Markdown with pandoc.
+.TP
+~/.csg/html/header.html
+.B User
+header for the HTML files converted from Markdown with pandoc.
+.TP
+/etc/csg/html/footer.html
+.B Default
+footer for the HTML files converted from Markdown with pandoc.
+.TP
+~/.csg/html/footer.html
+.B User
+footer for the HTML files converted from Markdown with pandoc.
+.TP
+/etc/csg/html/template.html
+.B Default
+template for pandoc.
+.TP
+~/.csg/html/template.html
+.B User
+template for pandoc.
 .SH SEE ALSO
 pandoc(1)
 .SH AUTHOR

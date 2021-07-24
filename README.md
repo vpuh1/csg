@@ -12,9 +12,9 @@ csg src dst
 ```
 where `src` is a source directory with Markdown files and `dst` is a destination directory, respectively.
 ### Installation
-Clone this repo, after that
+Install `pandoc`, clone this repo, after that.  
 ```
 make && sudo make install
 ```
-Edit `css/header.css`, `css/footer.css`, `css/mpheader.css`and `css/mpfooter.css`.  
-If you want to use csg outside of the repo, you need to change `confloc` to absolute path in `src/config.h`.
+You can find your csg files under ~/.csg/  
+See `man csg` for more info.

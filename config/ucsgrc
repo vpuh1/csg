@@ -1,0 +1,11 @@
+# Default user csg config
+highlight_theme = "breezedark"
+main_page_title = "csg"
+main_page_css = "~/.csg/css/index.css"
+main_page_header = "~/.csg/html/main_page_header.html"
+main_page_footer = "~/.csg/html/main_page_footer.html"
+main_page_name = "index.html"
+article_css = "~/.csg/css/pandoc.css"
+article_template = "~/.csg/html/template.html"
+article_header = "~/.csg/html/header.html"
+article_footer = "~/.csg/html/footer.html"
