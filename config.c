@@ -122,7 +122,7 @@ void replace_tilde(char *home, char *path) {
 void replace_tilde_all() { /* use /home/username/ or /Users/username instead of ~/ */
   char *username = get_user();
   char *home = (char *) malloc(sizeof(char) * PATH_MAX);
-#ifdef __APPLE_
+#ifdef __APPLE__
   strcpy(home, "/Users/");
 #else
   strcpy(home, "/home/");
