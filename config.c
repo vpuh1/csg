@@ -110,40 +110,32 @@ void set_default_config() {
   strcpy(conf.art_footer, "/etc/csg/html/footer.html");
 }
 
-void replace_tilde() { /* use /home/username/ instead of ~/ */
-  wordexp_t no_tilde;
-  conf.highlight_theme[strlen(conf.highlight_theme)] = '\0';
-  wordexp(conf.highlight_theme, &no_tilde, 0);
-  strcpy(conf.highlight_theme, no_tilde.we_wordv[0]);
-  wordfree(&no_tilde);
-  conf.mp_css[strlen(conf.mp_css)] = '\0';
-  wordexp(conf.mp_css, &no_tilde, 0);
-  strcpy(conf.mp_css, no_tilde.we_wordv[0]);
-  wordfree(&no_tilde);
-  conf.mp_header[strlen(conf.mp_header)] = '\0';
-  wordexp(conf.mp_header, &no_tilde, 0);
-  strcpy(conf.mp_header, no_tilde.we_wordv[0]);
-  wordfree(&no_tilde);
-  conf.mp_footer[strlen(conf.mp_footer)] = '\0';
-  wordexp(conf.mp_footer, &no_tilde, 0);
-  strcpy(conf.mp_footer, no_tilde.we_wordv[0]);
-  wordfree(&no_tilde);
-  conf.art_css[strlen(conf.art_css)] = '\0';
-  wordexp(conf.art_css, &no_tilde, 0);
-  strcpy(conf.art_css, no_tilde.we_wordv[0]);
-  wordfree(&no_tilde);
-  conf.art_template[strlen(conf.art_template)] = '\0';
-  wordexp(conf.art_template, &no_tilde, 0);
-  strcpy(conf.art_template, no_tilde.we_wordv[0]);
-  wordfree(&no_tilde);
-  conf.art_header[strlen(conf.art_header)] = '\0';
-  wordexp(conf.art_header, &no_tilde, 0);
-  strcpy(conf.art_header, no_tilde.we_wordv[0]);
-  wordfree(&no_tilde);
-  conf.art_footer[strlen(conf.art_footer)] = '\0';
-  wordexp(conf.art_footer, &no_tilde, 0);
-  strcpy(conf.art_footer, no_tilde.we_wordv[0]);
-  wordfree(&no_tilde);
+void replace_tilde(char *home, char *path) {
+  char *no_tilde = (char *) malloc(sizeof(char) * PATH_MAX);
+  if(path[0] == '~') {
+    strcpy(no_tilde, path + 1);
+    strcpy(path, home);
+    strcpy(path + strlen(path), no_tilde);
+  }
+}
+
+void replace_tilde_all() { /* use /home/username/ or /Users/username instead of ~/ */
+  char *username = get_user();
+  char *home = (char *) malloc(sizeof(char) * PATH_MAX);
+#ifdef __APPLE_
+  strcpy(home, "/Users/");
+#else
+  strcpy(home, "/home/");
+#endif
+  strcpy(home + strlen(home), username);
+  replace_tilde(home, conf.highlight_theme);
+  replace_tilde(home, conf.mp_css);
+  replace_tilde(home, conf.mp_header);
+  replace_tilde(home, conf.mp_footer);
+  replace_tilde(home, conf.art_css);
+  replace_tilde(home, conf.art_template);
+  replace_tilde(home, conf.art_header);
+  replace_tilde(home, conf.art_footer);
 }
 
 void open_config() {
@@ -154,7 +146,7 @@ void open_config() {
       char *buf = read_config(config);
       if(buf) {
         parse_config(buf, strlen(buf));
-        replace_tilde();
+        replace_tilde_all();
         free(buf);
       }
       fclose(config);
@@ -168,7 +160,7 @@ void open_config() {
     char *buf = read_config(config);
     if(buf) {
       parse_config(buf, strlen(buf));
-      replace_tilde();
+      replace_tilde_all();
       free(buf);
     }
     fclose(config);
