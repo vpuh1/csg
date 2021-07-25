@@ -37,20 +37,28 @@ char *get_user() {
   return username;
 }
 
+void replace_tilde(char *home, char *path) {
+  char *no_tilde = (char *) malloc(sizeof(char) * PATH_MAX);
+  if(path[0] == '~') {
+    strcpy(no_tilde, path + 1);
+    strcpy(path, home);
+    strcpy(path + strlen(path), no_tilde);
+  }
+}
+
 char *get_config() {
   char *username = get_user();
-  if(username) {
-    char *config_path = (char *) malloc(sizeof(char) * PATH_MAX);
-    strcpy(config_path, "/home/");
-    strcpy(config_path + strlen(config_path), username);
-    strcpy(config_path + strlen(config_path), "/.csg/csgrc");
-
-    free(username);
-    return config_path;
-  } else {
-    fprintf(stderr, "csg: cannot get username\n");
-    exit(1);
-  }
+  char *home = (char *) malloc(sizeof(char) * PATH_MAX);
+#ifdef __APPLE__
+  strcpy(home, "/Users/");
+#else
+  strcpy(home, "/home/");
+#endif
+  strcpy(home + strlen(home), username);
+  char *config_path = (char *) malloc(sizeof(char) * PATH_MAX);
+  strcpy(config_path, home);
+  strcpy(config_path + strlen(config_path), "/.csg/csgrc");
+  return config_path;
 }
 
 char *read_config(FILE *config) {
@@ -110,14 +118,6 @@ void set_default_config() {
   strcpy(conf.art_footer, "/etc/csg/html/footer.html");
 }
 
-void replace_tilde(char *home, char *path) {
-  char *no_tilde = (char *) malloc(sizeof(char) * PATH_MAX);
-  if(path[0] == '~') {
-    strcpy(no_tilde, path + 1);
-    strcpy(path, home);
-    strcpy(path + strlen(path), no_tilde);
-  }
-}
 
 void replace_tilde_all() { /* use /home/username/ or /Users/username instead of ~/ */
   char *username = get_user();
