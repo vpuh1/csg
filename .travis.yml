@@ -8,6 +8,10 @@ jobs:
           packages:
             - pandoc
     - os: osx
+      addons:
+        brew:
+          packages:
+            - pandoc
     - os: freebsd
       addons:
         pkg:
@@ -15,8 +19,8 @@ jobs:
 
 compiler: gcc
 
-before_scripts:
-- if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install pandoc; fi
+  #before_scripts:
+  #- if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install pandoc; fi
 
 script:
 - if [ "$TRAVIS_OS_NAME" = "freebsd" ]; then gmake; fi
