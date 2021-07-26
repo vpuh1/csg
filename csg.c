@@ -27,6 +27,7 @@
 #include <sys/syslimits.h>
 #elif __linux__
 #include <linux/limits.h>
+#define ARG_MAX sysconf(_SC_ARG_MAX)
 #elif __FreeBSD__
 #include <sys/syslimits.h>
 #endif
@@ -34,12 +35,13 @@
 #include "csg.h"
 #include "config.h"
 
-#define ARG_MAX sysconf(_SC_ARG_MAX)
-
 char *list_md_t = "find %s | grep '.md$'"; /* list all .md files */
 char *make_dir_t = "mkdir -p %s"; /* make dst dir */
 char *get_title_t = "cat %s | grep title | cut -c 8-"; /* 'title: ' = 7 */
 char *get_date_t = "cat %s | grep date | cut -c 7-"; /* 'date: ' = 6 */
+
+struct config conf;
+struct config_values conf_val[NUM_CONFIG_VALUES];
 
 char *exec_output(char *cmd) {
   char *output = (char *) malloc(sizeof(char) * ARG_MAX);
@@ -272,8 +274,9 @@ int main(int argc, char **argv) {
     printf("\tdst: destination directory for converted files\n");
     exit(1);
   }
-  init_config_values();
-  open_config();
+
+  init_config_values(&conf, conf_val);
+  open_config(&conf, conf_val);
 
   /* list all .md files in src directory */
   char *list_md = (char *) malloc(sizeof(char) * ARG_MAX);

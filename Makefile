@@ -5,6 +5,7 @@ OBJ = csg.o config.o
 MAN_DIR = ./doc/
 MAN_PAGE = csg.1
 PREFIX = /usr/local
+MANPREFIX = /usr/local/share/man
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
@@ -26,13 +27,13 @@ clean:
 
 .PHONY: install
 
-install-man: 
-	mkdir -p ${PREFIX}/man/man1
-	cp $(MAN_DIR)$(MAN_PAGE) $(DESTDIR)$(PREFIX)/man/man1/$(MAN_PAGE)
-
-install: csg install-man
+install: csg
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
 	cp $< $(DESTDIR)$(PREFIX)/bin/csg
+	chmod 755 ${DESTDIR}${PREFIX}/bin/csg
+	mkdir -p ${PREFIX}/man/man1
+	cp $(MAN_DIR)$(MAN_PAGE) $(DESTDIR)$(MANPREFIX)/man1/csg.1
+	chmod 644 ${DESTDIR}${MANPREFIX}/man1/csg.1
 	mkdir -p /etc/csg
 	cp config/scsgrc /etc/csg/csgrc
 	cp -r html /etc/csg/
@@ -46,9 +47,9 @@ test: csg
 .PHONY: uninstall
 
 uninstall-man:
-	rm -f $(DESTDIR)$(PREFIX)/man/man1/${MAN_PAGE}
 
 uninstall: uninstall-man
-	rm -f $(DESTDIR)$(PREFIX)/bin/csg
+	rm -f $(DESTDIR)$(PREFIX)/bin/csg \
+		$(DESTDIR)$(MANPREFIX)/man1/csg.1
 	rm -r /etc/csg
 	rm -f ~/.csg

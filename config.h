@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 #ifndef CONFIG_H
 #define CONFIG_H
 
@@ -45,8 +46,7 @@ struct config {
   char art_header[PATH_MAX];   /* header for the article */
   char art_footer[PATH_MAX];   /* footer for the article */
 };
-/* 
- * Highlight Themes.
+/* * Highlight Themes.
  *
  * Available highlight themes: pygments, kate, monochrome, breezedark,
  * espresso, zenburn, haddock, tango.
@@ -60,16 +60,17 @@ struct config_values { /* config values to parse */
   char *var; /* corresponding variable */
 };
 
-struct config conf; /* csg config */
-struct config_values conf_val[NUM_CONFIG_VALUES]; /* csg config values */
+//extern struct config conf; /* csg config */
+//extern struct config_values conf_val[NUM_CONFIG_VALUES]; /* csg config values */
 
 /* functions declaration */
-void init_config_values();
+void init_config_values(struct config *conf, struct config_values *conf_val);
 char *get_user();
 char *get_config();
 char *read_config(FILE *config);
-void parse_config(char *buf, int size);
-void set_default_config();
-void open_config();
+void parse_config(char *buf, int size, struct config conf, 
+                  struct config_values *conf_val);
+void set_default_config(struct config conf);
+void open_config(struct config *conf, struct config_values *conf_val);
 
 #endif /* CONFIG_H */

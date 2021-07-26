@@ -6,27 +6,27 @@
 
 #include "config.h"
 
-void init_config_values() {
+void init_config_values(struct config *conf, struct config_values *conf_val) {
   strcpy(conf_val[0].name, "highlight_theme");
-  conf_val[0].var = conf.highlight_theme;
+  conf_val[0].var = conf->highlight_theme;
   strcpy(conf_val[1].name, "main_page_title");
-  conf_val[1].var = conf.mp_title;
+  conf_val[1].var = conf->mp_title;
   strcpy(conf_val[2].name, "main_page_css");
-  conf_val[2].var = conf.mp_css;
+  conf_val[2].var = conf->mp_css;
   strcpy(conf_val[3].name, "main_page_header");
-  conf_val[3].var = conf.mp_header;
+  conf_val[3].var = conf->mp_header;
   strcpy(conf_val[4].name, "main_page_footer");
-  conf_val[4].var = conf.mp_footer;
+  conf_val[4].var = conf->mp_footer;
   strcpy(conf_val[5].name, "main_page_name");
-  conf_val[5].var = conf.mp_name;
+  conf_val[5].var = conf->mp_name;
   strcpy(conf_val[6].name, "article_css");
-  conf_val[6].var = conf.art_css;
+  conf_val[6].var = conf->art_css;
   strcpy(conf_val[7].name, "article_template");
-  conf_val[7].var = conf.art_template;
+  conf_val[7].var = conf->art_template;
   strcpy(conf_val[8].name, "article_header");
-  conf_val[8].var = conf.art_header;
+  conf_val[8].var = conf->art_header;
   strcpy(conf_val[9].name, "article_footer");
-  conf_val[9].var = conf.art_footer;
+  conf_val[9].var = conf->art_footer;
 }
 
 char *get_user() {
@@ -70,7 +70,8 @@ char *read_config(FILE *config) {
   return buf;
 }
 
-void parse_config(char *buf, int size) {
+void parse_config(char *buf, int size, struct config conf, 
+                  struct config_values *conf_val) {
   for(int i = 0; i < size; i++) {
     if(buf[i] == '#' && (i == 0 || buf[i - 1] == '\n')) {
       while(buf[i] != '\n')
@@ -95,7 +96,7 @@ void parse_config(char *buf, int size) {
       val[j] = buf[i];
     }
     val[j] = '\0';
-    for(int j = 0; j < 10; j++) {
+    for(int j = 0; j < NUM_CONFIG_VALUES; j++) {
       if(strcmp(var, conf_val[j].name) == 0) {
         strcpy(conf_val[j].var, val);
         break;
@@ -105,7 +106,7 @@ void parse_config(char *buf, int size) {
   }
 }
 
-void set_default_config() {
+void set_default_config(struct config conf) {
   strcpy(conf.highlight_theme, "breezedark");
   strcpy(conf.mp_title, "csg");
   strcpy(conf.mp_css, "/etc/csg/css/index.css");
@@ -119,7 +120,7 @@ void set_default_config() {
 }
 
 
-void replace_tilde_all() { /* use /home/username/ or /Users/username instead of ~/ */
+void replace_tilde_all(struct config *conf) { /* use /home/username/ or /Users/username instead of ~/ */
   char *username = get_user();
   char *home = (char *) malloc(sizeof(char) * PATH_MAX);
 #ifdef __APPLE__
@@ -128,25 +129,25 @@ void replace_tilde_all() { /* use /home/username/ or /Users/username instead of 
   strcpy(home, "/home/");
 #endif
   strcpy(home + strlen(home), username);
-  replace_tilde(home, conf.highlight_theme);
-  replace_tilde(home, conf.mp_css);
-  replace_tilde(home, conf.mp_header);
-  replace_tilde(home, conf.mp_footer);
-  replace_tilde(home, conf.art_css);
-  replace_tilde(home, conf.art_template);
-  replace_tilde(home, conf.art_header);
-  replace_tilde(home, conf.art_footer);
+  replace_tilde(home, conf->highlight_theme);
+  replace_tilde(home, conf->mp_css);
+  replace_tilde(home, conf->mp_header);
+  replace_tilde(home, conf->mp_footer);
+  replace_tilde(home, conf->art_css);
+  replace_tilde(home, conf->art_template);
+  replace_tilde(home, conf->art_header);
+  replace_tilde(home, conf->art_footer);
 }
 
-void open_config() {
+void open_config(struct config *conf, struct config_values *conf_val) {
   char *config_path = get_config();
   if(config_path) {
     FILE *config = fopen(config_path, "r");
     if(config) {
       char *buf = read_config(config);
       if(buf) {
-        parse_config(buf, strlen(buf));
-        replace_tilde_all();
+        parse_config(buf, strlen(buf), *conf, conf_val);
+        replace_tilde_all(conf);
         free(buf);
       }
       fclose(config);
@@ -159,14 +160,14 @@ void open_config() {
   if(config) {
     char *buf = read_config(config);
     if(buf) {
-      parse_config(buf, strlen(buf));
-      replace_tilde_all();
+      parse_config(buf, strlen(buf), *conf, conf_val);
+      replace_tilde_all(conf);
       free(buf);
     }
     fclose(config);
   }
   else {
-    set_default_config();
+    set_default_config(*conf);
     exit(1);
   }
   free(config_path);
