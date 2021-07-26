@@ -35,14 +35,15 @@
 #include "csg.h"
 #include "config.h"
 
-char *list_md_t = "find %s | grep '.md$'"; /* list all .md files */
-char *make_dir_t = "mkdir -p %s"; /* make dst dir */
-char *get_title_t = "cat %s | grep title | cut -c 8-"; /* 'title: ' = 7 */
-char *get_date_t = "cat %s | grep date | cut -c 7-"; /* 'date: ' = 6 */
+char *list_md_t = "find %s | grep '.md$'";             /* list all .md files */
+char *make_dir_t = "mkdir -p %s";                      /* make dst dir */
+char *get_title_t = "cat %s | grep title | cut -c 8-"; /* get title */
+char *get_date_t = "cat %s | grep date | cut -c 7-";   /* get date */
 
 struct config conf;
 struct config_values conf_val[NUM_CONFIG_VALUES];
 
+/* execute and get output */
 char *exec_output(char *cmd) {
   char *output = (char *) malloc(sizeof(char) * ARG_MAX);
   int fd[2];
@@ -76,6 +77,7 @@ char *exec_output(char *cmd) {
   return output;
 }
 
+/* get number of articles */
 int get_nart(char *buff, int size) {
   int i;
   int cnt = 0;
@@ -88,7 +90,7 @@ int get_nart(char *buff, int size) {
   return cnt;
 }
 
-void parse(art *article, int size, char *buff) {
+void parse_articles(struct art *article, int size, char *buff) {
   int k = 0;
   int beg = 0, end = 0;
 
@@ -102,7 +104,8 @@ void parse(art *article, int size, char *buff) {
   }
 }
 
-void get_info(int nart, art *article) { /* get title and date */
+/* get article's title and date */
+void get_info(int nart, struct art *article) {
   for(int i = 0; i < nart; i++) {
     char *get_title = (char *) malloc(sizeof(char) * NAME_MAX);
     char *get_date = (char *) malloc(sizeof(char) * NAME_MAX);
@@ -116,9 +119,6 @@ void get_info(int nart, art *article) { /* get title and date */
     free(get_title);
     free(get_date);
 
-    //title[strlen(title) - 1]  = '\0'; /* we don't need both \n and \0 */
-    //date[strlen(date) - 1]  = '\0'; /* the same */
-
     strcpy(article[i].title, title);
     strcpy(article[i].date, date);
 
@@ -127,7 +127,8 @@ void get_info(int nart, art *article) { /* get title and date */
   }
 }
 
-void gen_dst(int nart, art *article, char *dstdir) { /* generate dst path */
+/* generate dst path */
+void gen_dst(int nart, struct art *article, char *dstdir) { 
   char *name = (char *) malloc(sizeof(char) * NAME_MAX);
   int i, j;
 
@@ -168,34 +169,35 @@ void gen_dst(int nart, art *article, char *dstdir) { /* generate dst path */
   free(name);
 }
 
-void gen_pandoc_cmd(char *buff, art article) {
+void gen_pandoc_cmd(char *buff, struct art article) {
   if(strcmp(conf.art_header, "") == 0) {
     if(strcmp(conf.art_footer, "") == 0) {
       sprintf(buff, "pandoc -f markdown -t html -s %s -o %s --highlight-style="
-              "%s --css=%s --template=%s", article.src, article.dst,
-              conf.highlight_theme, conf.art_css, conf.art_template);
+          "%s --css=%s --template=%s", article.src, article.dst,
+          conf.highlight_theme, conf.art_css, conf.art_template);
     } else {
       sprintf(buff, "pandoc -f markdown -t html -s -A %s %s -o %s"
-              " --highlight-style=%s --css=%s --template=%s", conf.art_footer,
-              article.src, article.dst, conf.highlight_theme, conf.art_css,
-              conf.art_template);
+          " --highlight-style=%s --css=%s --template=%s", conf.art_footer,
+          article.src, article.dst, conf.highlight_theme, conf.art_css,
+          conf.art_template);
     }
   } else {
     if(strcmp(conf.art_footer, "") == 0) {
       sprintf(buff, "pandoc -f markdown -t html -s -B %s %s -o %s"
-              " --highlight-style=%s --css=%s --template=%s", conf.art_header,
-              article.src, article.dst, conf.art_css, conf.highlight_theme,
-              conf.art_template);
+          " --highlight-style=%s --css=%s --template=%s", conf.art_header,
+          article.src, article.dst, conf.art_css, conf.highlight_theme,
+          conf.art_template);
     } else {
       sprintf(buff, "pandoc -f markdown -t html -s -B %s -A %s %s -o %s"
-              " --highlight-style=%s --css=%s --template=%s", conf.art_header,
-              conf.art_footer, article.src, article.dst, conf.highlight_theme,
-              conf.art_css, conf.art_template);
+          " --highlight-style=%s --css=%s --template=%s", conf.art_header,
+          conf.art_footer, article.src, article.dst, conf.highlight_theme,
+          conf.art_css, conf.art_template);
     }
   }
 }
 
-void convert(art article) {
+/* convert md to html */
+void convert(struct art article) {
   char *convert = (char *) malloc(sizeof(char) * ARG_MAX);
   gen_pandoc_cmd(convert, article);
 
@@ -213,7 +215,8 @@ void convert(art article) {
   } else return;
 }
 
-char *read_mp (char *filename) { /* reads mainpage header/footer */
+/* read main page header/footer */
+char *read_mp (char *filename) {
   FILE *f = fopen(filename, "r");
 
   if(!f) {
@@ -232,7 +235,7 @@ char *read_mp (char *filename) { /* reads mainpage header/footer */
   return buff;
 }
 
-void gen_main_page(int nart, art *article, char *path) {
+void gen_main_page(int nart, struct art *article, char *path) {
   char *hdata = read_mp(conf.mp_header);
   char *fdata = read_mp(conf.mp_footer);
 
@@ -240,7 +243,7 @@ void gen_main_page(int nart, art *article, char *path) {
 
   fprintf(index, "<!DOCTYPE html>\n<head>\n<meta charset=\"UTF-8\">\n");
   fprintf(index, "<meta name=\"viewport\" content=\"width=device-width"
-          " initial-scale=1.0\">\n");
+      " initial-scale=1.0\">\n");
   fprintf(index, "<title>%s</title>\n", conf.mp_title);
   fprintf(index, "<link rel=\"stylesheet\" href=\"%s\">\n</head>\n", conf.mp_css);
   fprintf(index, "<body>\n<div class=\"container\">\n");
@@ -252,7 +255,7 @@ void gen_main_page(int nart, art *article, char *path) {
   for(i = 0; i < nart; i++) {
     fprintf(index, "<li class=\"item\">\n");
     fprintf(index, "<a href=\"%s\" class=\"title\">%s</a>\n", article[i].name,
-            article[i].title);
+        article[i].title);
     fprintf(index, "<div class=\"date\">%s</div>\n", article[i].date);
     fprintf(index, "<li/>\n");
   }
@@ -293,8 +296,8 @@ int main(int argc, char **argv) {
   char *articles = exec_output(list_md);
   int nart = get_nart(articles, strlen(articles));
 
-  art article[nart];
-  parse(article, strlen(articles), articles);
+  struct art article[nart];
+  parse_articles(article, strlen(articles), articles);
   get_info(nart, article);
 
   int i;

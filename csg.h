@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 #ifdef __APPLE__
 #include <sys/syslimits.h>
 #elif __linux__
@@ -29,10 +30,10 @@
 #define MAX_SRC_LEN PATH_MAX
 #define MAX_DST_LEN PATH_MAX
 
-typedef struct {
-  char title[MAX_TITLE_LEN]; /* Article title */
-  char date[MAX_DATE_LEN];  /* Article date */
-  char name[MAX_NAME_LEN]; /* file name */
-  char src[MAX_SRC_LEN]; /* Source path */
-  char dst[MAX_DST_LEN]; /* Destination path */
-} art; /* Article */
+struct art { /* Article */
+  char title[MAX_TITLE_LEN];  /* Article title */
+  char date[MAX_DATE_LEN];    /* Article date */
+  char name[MAX_NAME_LEN];    /* file name */
+  char src[MAX_SRC_LEN];      /* Source path */
+  char dst[MAX_DST_LEN];      /* Destination path */
+};
