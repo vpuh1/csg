@@ -41,36 +41,36 @@ $highlighting-css$
   <body>
     <div id="main">
       <div id="container">
-        $for(include-before)$
-        $include-before$
-        $endfor$
+$for(include-before)$
+$include-before$
+$endfor$
         <div id="center">
-          $if(title)$
+$if(title)$
           <header id="title-block-header">
             <h1 class="title">$title$</h1>
-            $if(subtitle)$
+$if(subtitle)$
             <p class="subtitle">$subtitle$</p>
-            $endif$
-            $for(author)$
+$endif$
+$for(author)$
             <p class="author">$author$</p>
-            $endfor$
-            $if(date)$
+$endfor$
+$if(date)$
             <p class="date">$date$</p>
-            $endif$
+$endif$
           </header>
-          $endif$
+$endif$
         <div id="left">
-          $if(toc)$
+$if(toc)$
           <nav id="$idprefix$TOC">
-            $table-of-contents$
+$table-of-contents$
           </nav>
-          $endif$
-          $body$
+$endif$
+$body$
         </div>
       </div>
-      $for(include-after)$
-      $include-after$
-      $endfor$
+$for(include-after)$
+$include-after$
+$endfor$
       </div>
     </div>
   </body>
