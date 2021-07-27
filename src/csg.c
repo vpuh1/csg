@@ -194,9 +194,11 @@ void copy_dirs(char *src_dir, int src_size, char *dst_dir) {
   }
 }
 
-void rm_md_from_dir(char *path) { /* removes all .md files from dst dir */
+void rm_md_from_dir(char *src, char *dst) { /* removes all .md files from dst dir */
+  if(strcmp(src, dst) == 0)
+    return;
   char *rm_md = (char *) malloc(sizeof(char) * CSG_PATH_MAX);
-  sprintf(rm_md, rm_md_t, path);
+  sprintf(rm_md, rm_md_t, dst);
   pid_t p = fork();
   if(p == -1) {
     fprintf(stderr, "csg: cannot fork process: %d\n", p);
@@ -353,7 +355,7 @@ int main(int argc, char **argv) {
   gen_dst(nart, article, argv[1], strlen(argv[1]), argv[2]);
  
   copy_dirs(argv[1], strlen(argv[1]), argv[2]); 
-  rm_md_from_dir(argv[2]);
+  rm_md_from_dir(argv[1], argv[2]);
 
   for(i = 0; i < nart; i++) {
     convert(article[i]);

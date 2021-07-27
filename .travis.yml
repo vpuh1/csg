@@ -19,8 +19,8 @@ jobs:
 
 compiler: gcc
 
-  #before_scripts:
-  #- if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install pandoc; fi
+before_scripts:
+  cd src
 
 script:
 - if [ "$TRAVIS_OS_NAME" = "freebsd" ]; then gmake; fi

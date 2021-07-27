@@ -21,7 +21,7 @@ csg: $(OBJ)
 
 clean:
 	rm -f $(OBJ) csg
-	if [ -d "./test" ]; then rm -r test; fi
+	if [ -f "../test/index.html" ]; then rm ../test/*.html; fi
 
 
 .PHONY: install
@@ -39,8 +39,6 @@ install: csg
 	cp -r ../css /etc/csg/
 
 test: csg
-	mkdir -p ../test
-	../test.sh
 	./csg ../test ../test
 
 .PHONY: uninstall
