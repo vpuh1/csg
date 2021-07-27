@@ -23,6 +23,7 @@
 #include <wordexp.h>
 
 #include "config.h"
+#include "limits.h"
 
 void init_config_values(struct config *conf, struct config_values *conf_val) {
   strcpy(conf_val[0].name, "highlight_theme");
@@ -48,15 +49,15 @@ void init_config_values(struct config *conf, struct config_values *conf_val) {
 }
 
 char *get_user() {
-  char *username = (char *) malloc(sizeof(char) * NAME_MAX);
-  getlogin_r(username, NAME_MAX);
+  char *username = (char *) malloc(sizeof(char) * CSG_NAME_MAX);
+  getlogin_r(username, CSG_NAME_MAX);
   if(username[strlen(username) - 1] != '\0')
     username[strlen(username)] = '\0';
   return username;
 }
 
 void replace_tilde(char *home, char *path) {
-  char *no_tilde = (char *) malloc(sizeof(char) * PATH_MAX);
+  char *no_tilde = (char *) malloc(sizeof(char) * CSG_PATH_MAX);
   if(path[0] == '~') {
     strcpy(no_tilde, path + 1);
     strcpy(path, home);
@@ -66,21 +67,21 @@ void replace_tilde(char *home, char *path) {
 
 char *get_config() {
   char *username = get_user();
-  char *home = (char *) malloc(sizeof(char) * PATH_MAX);
+  char *home = (char *) malloc(sizeof(char) * CSG_PATH_MAX);
 #ifdef __APPLE__
   strcpy(home, "/Users/");
 #else
   strcpy(home, "/home/");
 #endif
   strcpy(home + strlen(home), username);
-  char *config_path = (char *) malloc(sizeof(char) * PATH_MAX);
+  char *config_path = (char *) malloc(sizeof(char) * CSG_PATH_MAX);
   strcpy(config_path, home);
   strcpy(config_path + strlen(config_path), "/.csg/csgrc");
   return config_path;
 }
 
 char *read_config(FILE *config) {
-  char *buf = (char *) malloc(sizeof(char) *(PATH_MAX * 7 + NAME_MAX * 13));
+  char *buf = (char *) malloc(sizeof(char) *(CSG_PATH_MAX * 7 + CSG_NAME_MAX * 13));
   int i = 0;
   while((buf[i] = fgetc(config)) != EOF)
     i++;
@@ -99,7 +100,7 @@ void parse_config(char *buf, int size, struct config conf,
       else
         return;
     }
-    char var[NAME_MAX], val[PATH_MAX];
+    char var[CSG_NAME_MAX], val[CSG_PATH_MAX];
     int k = 0;
     for(; !(buf[i] == ' ' || buf[i] == '='); i++, k++)
       var[k] = buf[i];
@@ -140,7 +141,7 @@ void set_default_config(struct config conf) {
 
 void replace_tilde_all(struct config *conf) { /* use /home/username/ or /Users/username instead of ~/ */
   char *username = get_user();
-  char *home = (char *) malloc(sizeof(char) * PATH_MAX);
+  char *home = (char *) malloc(sizeof(char) * CSG_PATH_MAX);
 #ifdef __APPLE__
   strcpy(home, "/Users/");
 #else

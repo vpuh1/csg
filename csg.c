@@ -23,29 +23,26 @@
 #include <sys/param.h>
 #include <sys/wait.h>
 
-#ifdef __APPLE__
-#include <sys/syslimits.h>
-#elif __linux__
-#include <linux/limits.h>
-#define ARG_MAX sysconf(_SC_ARG_MAX)
-#elif __FreeBSD__
-#include <sys/syslimits.h>
-#endif
-
 #include "csg.h"
 #include "config.h"
+#include "limits.h"
+#include "convert.h"
 
 char *list_md_t = "find %s | grep '.md$'";             /* list all .md files */
 char *make_dir_t = "mkdir -p %s";                      /* make dst dir */
 char *get_title_t = "cat %s | grep title | cut -c 8-"; /* get title */
 char *get_date_t = "cat %s | grep date | cut -c 7-";   /* get date */
+char *get_dir_t = "find %s -mindepth 1 -maxdepth 1 -type d";
+/* get subdirectories of src directory */
+char *rm_md_t = "find %s -type f -name '*.md' -exec rm {} +";
+/* remove .md files from dst directory */
 
 struct config conf;
 struct config_values conf_val[NUM_CONFIG_VALUES];
 
 /* execute and get output */
 char *exec_output(char *cmd) {
-  char *output = (char *) malloc(sizeof(char) * ARG_MAX);
+  char *output = (char *) malloc(sizeof(char) * CSG_ARG_MAX);
   int fd[2];
 
   if(pipe(fd) == -1) {
@@ -69,7 +66,7 @@ char *exec_output(char *cmd) {
     exit(EXIT_FAILURE);
   } else {
     close(fd[1]);
-    int nbytes = read(fd[0], output, ARG_MAX);
+    int nbytes = read(fd[0], output, CSG_ARG_MAX);
     output[nbytes] = '\0';
     wait(NULL);
   }
@@ -107,8 +104,8 @@ void parse_articles(struct art *article, int size, char *buff) {
 /* get article's title and date */
 void get_info(int nart, struct art *article) {
   for(int i = 0; i < nart; i++) {
-    char *get_title = (char *) malloc(sizeof(char) * NAME_MAX);
-    char *get_date = (char *) malloc(sizeof(char) * NAME_MAX);
+    char *get_title = (char *) malloc(sizeof(char) * CSG_NAME_MAX);
+    char *get_date = (char *) malloc(sizeof(char) * CSG_NAME_MAX);
 
     sprintf(get_title, get_title_t, article[i].src);
     sprintf(get_date, get_date_t, article[i].src);
@@ -128,11 +125,20 @@ void get_info(int nart, struct art *article) {
 }
 
 /* generate dst path */
-void gen_dst(int nart, struct art *article, char *dstdir) { 
-  char *name = (char *) malloc(sizeof(char) * NAME_MAX);
+void gen_dst(int nart, struct art *article, char *src_dir, int src_size, char *dst_dir) { 
+  char *name = (char *) malloc(sizeof(char) * CSG_NAME_MAX);
   int i, j;
 
   for(i = 0; i < nart; i++) {
+    strcpy(article[i].dst, get_dst(article[i].src, src_dir, src_size, dst_dir));
+
+    int k = strlen(article[i].dst);
+    article[i].dst[k - 2] = 'h';
+    article[i].dst[k - 1] = 't';
+    article[i].dst[k] = 'm';
+    article[i].dst[k + 1] = 'l';
+    article[i].dst[k + 2] = '\0';
+
     for(j = strlen(article[i].src) - 1; j >= 0; j--) {
       if(article[i].src[j] == '/') {
         memcpy(name, &article[i].src[j + 1], strlen(article[i].src) - j);
@@ -140,25 +146,19 @@ void gen_dst(int nart, struct art *article, char *dstdir) {
         break;
       } 
     }
-    strcpy(article[i].dst, dstdir);
+    //strcpy(article[i].dst, dstdir);
 
-    if(article[i].dst[strlen(dstdir) - 1] != '/') {
+    /*if(article[i].dst[strlen(dstdir) - 1] != '/') {
       article[i].dst[strlen(dstdir)] = '/';
       article[i].dst[strlen(dstdir) + 1] = '\0';
-    }
+    }*/
 
-    int tmplen = strlen(article[i].dst);
-    strcpy(article[i].dst + strlen(article[i].dst), name);
-    int k = tmplen + strlen(name);
-
-    article[i].dst[k - 2] = 'h';
-    article[i].dst[k - 1] = 't';
-    article[i].dst[k] = 'm';
-    article[i].dst[k + 1] = 'l';
-    article[i].dst[k + 2] = '\0';
-
+    //int tmplen = strlen(article[i].dst);
+    //strcpy(article[i].dst + strlen(article[i].dst), name);
+    //int k = tmplen + strlen(name);
+    
     k = strlen(name);
-    name[k- 2] = 'h';
+    name[k - 2] = 'h';
     name[k - 1] = 't';
     name[k] = 'm';
     name[k + 1] = 'l';
@@ -167,6 +167,43 @@ void gen_dst(int nart, struct art *article, char *dstdir) {
     strcpy(article[i].name, name);
   }
   free(name);
+}
+
+void copy_dirs(char *src_dir, int src_size, char *dst_dir) {
+  char *get_dirs = (char *) malloc(sizeof(char) * CSG_PATH_MAX);
+  sprintf(get_dirs, get_dir_t, src_dir);
+  char *dirs = exec_output(get_dirs);
+  int k = 0;
+  int beg = 0, end = 0;
+  char *dir = (char *) malloc(sizeof(char) * CSG_PATH_MAX);
+  for(end = 0; end < strlen(dirs); end++) {
+    if(dirs[end] == '\n') {
+      memcpy(dir, &dirs[beg], end - beg);
+      dir[end - beg] = '\0';
+      char *copied_dir = get_dst(dir, src_dir, src_size, dst_dir);
+      pid_t p = fork();
+      if(p == -1) {
+        fprintf(stderr, "csg: cannot fork process: %d\n", p);
+        exit(1);
+      } else if(p == 0) {
+        execlp("cp", "cp", "-r", dir, copied_dir, NULL);
+      }
+      k++;
+      beg = end + 1;
+    }
+  }
+}
+
+void rm_md_from_dir(char *path) { /* removes all .md files from dst dir */
+  char *rm_md = (char *) malloc(sizeof(char) * CSG_PATH_MAX);
+  sprintf(rm_md, rm_md_t, path);
+  pid_t p = fork();
+  if(p == -1) {
+    fprintf(stderr, "csg: cannot fork process: %d\n", p);
+    exit(1);
+  } else if(p == 0) {
+    execlp("sh", "sh", "-c", rm_md, NULL);
+  }
 }
 
 void gen_pandoc_cmd(char *buff, struct art article) {
@@ -198,7 +235,7 @@ void gen_pandoc_cmd(char *buff, struct art article) {
 
 /* convert md to html */
 void convert(struct art article) {
-  char *convert = (char *) malloc(sizeof(char) * ARG_MAX);
+  char *convert = (char *) malloc(sizeof(char) * CSG_ARG_MAX);
   gen_pandoc_cmd(convert, article);
 
   printf("%s\n", convert);
@@ -235,7 +272,7 @@ char *read_mp (char *filename) {
   return buff;
 }
 
-void gen_main_page(int nart, struct art *article, char *path) {
+void gen_main_page(int nart, struct art *article, int src_size, char *path) {
   char *hdata = read_mp(conf.mp_header);
   char *fdata = read_mp(conf.mp_footer);
 
@@ -254,8 +291,12 @@ void gen_main_page(int nart, struct art *article, char *path) {
   int i;
   for(i = 0; i < nart; i++) {
     fprintf(index, "<li class=\"item\">\n");
-    fprintf(index, "<a href=\"%s\" class=\"title\">%s</a>\n", article[i].name,
-        article[i].title);
+    char *rpath = get_relative_path(src_size, article[i].dst);
+    if(rpath){
+      fprintf(index, "<a href=\"%s\" class=\"title\">%s</a>\n", rpath + 1,
+              article[i].title);
+      free(rpath);
+    }
     fprintf(index, "<div class=\"date\">%s</div>\n", article[i].date);
     fprintf(index, "<li/>\n");
   }
@@ -282,10 +323,10 @@ int main(int argc, char **argv) {
   open_config(&conf, conf_val);
 
   /* list all .md files in src directory */
-  char *list_md = (char *) malloc(sizeof(char) * ARG_MAX);
+  char *list_md = (char *) malloc(sizeof(char) * CSG_ARG_MAX);
   sprintf(list_md, list_md_t, argv[1]);
 
-  char *mp = (char *) malloc(sizeof(char) * PATH_MAX);
+  char *mp = (char *) malloc(sizeof(char) * CSG_PATH_MAX);
 
   realpath(argv[2], mp);
   int tmplen = strlen(mp);
@@ -308,13 +349,16 @@ int main(int argc, char **argv) {
       fprintf(stderr, "csg: missing date for %s!\n", article[i].src);
   }
 
-  gen_dst(nart, article, argv[2]);
+  gen_dst(nart, article, argv[1], strlen(argv[1]), argv[2]);
+ 
+  copy_dirs(argv[1], strlen(argv[1]), argv[2]); 
+  rm_md_from_dir(argv[2]);
 
   for(i = 0; i < nart; i++) {
     convert(article[i]);
   }
 
-  gen_main_page(nart, article, mp);
+  gen_main_page(nart, article, strlen(argv[1]), mp);
 
   free(list_md);
   free(mp);

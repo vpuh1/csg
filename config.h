@@ -29,21 +29,23 @@
 
 #include <stdio.h>
 
+#include "limits.h"
+
 #define NUM_CONFIG_VALUES 10
 
 struct config {
-  char highlight_theme[NAME_MAX];  /* code highlight theme, see comment below
+  char highlight_theme[CSG_NAME_MAX];  /* code highlight theme, see comment below
                                       (Highlight themes) for more info */
-  char mp_title[NAME_MAX];         /* main page title */
-  char mp_css[PATH_MAX];           /* main page css */
-  char mp_header[PATH_MAX];        /* main page header */
-  char mp_footer[PATH_MAX];        /* main page footer */
-  char mp_name[NAME_MAX];          /* main page name */
+  char mp_title[NAME_MAX];            /* main page title */
+  char mp_css[CSG_PATH_MAX];          /* main page css */
+  char mp_header[CSG_PATH_MAX];       /* main page header */
+  char mp_footer[CSG_PATH_MAX];       /* main page footer */
+  char mp_name[CSG_NAME_MAX];         /* main page name */
 
-  char art_css[PATH_MAX];      /* css for the article*/
-  char art_template[PATH_MAX]; /* template for the article */
-  char art_header[PATH_MAX];   /* header for the article */
-  char art_footer[PATH_MAX];   /* footer for the article */
+  char art_css[CSG_PATH_MAX];         /* css for the article*/
+  char art_template[CSG_PATH_MAX];    /* template for the article */
+  char art_header[CSG_PATH_MAX];      /* header for the article */
+  char art_footer[CSG_PATH_MAX];      /* footer for the article */
 };
 /* * Highlight Themes.
  *
@@ -54,13 +56,11 @@ struct config {
  *   pandoc --print-highlight-style pygments > my.theme
  * Then edit my.theme.
  */
-struct config_values { /* config values to parse */
-  char name[NAME_MAX]; /* name in config file */
-  char *var; /* corresponding variable */
-};
 
-//extern struct config conf; /* csg config */
-//extern struct config_values conf_val[NUM_CONFIG_VALUES]; /* csg config values */
+struct config_values {     /* config values to parse */
+  char name[CSG_NAME_MAX]; /* name in config file */
+  char *var;               /* corresponding variable */
+};
 
 /* functions declaration */
 void init_config_values(struct config *conf, struct config_values *conf_val);

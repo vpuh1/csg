@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-I.
-DEPS = csg.h config.h
-OBJ = csg.o config.o
+DEPS = csg.h config.h limits.h convert.h
+OBJ = csg.o config.o convert.o
 MAN_DIR = ./doc/
 MAN_PAGE = csg.1
 PREFIX = /usr/local

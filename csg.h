@@ -16,24 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifdef __APPLE__
-#include <sys/syslimits.h>
-#elif __linux__
-#include <linux/limits.h>
-#elif __FreeBSD__
-#include <sys/syslimits.h>
-#endif
+#include "limits.h"
 
-#define MAX_TITLE_LEN NAME_MAX
-#define MAX_DATE_LEN NAME_MAX
-#define MAX_NAME_LEN NAME_MAX
-#define MAX_SRC_LEN PATH_MAX
-#define MAX_DST_LEN PATH_MAX
-
-struct art { /* Article */
-  char title[MAX_TITLE_LEN];  /* Article title */
-  char date[MAX_DATE_LEN];    /* Article date */
-  char name[MAX_NAME_LEN];    /* file name */
-  char src[MAX_SRC_LEN];      /* Source path */
-  char dst[MAX_DST_LEN];      /* Destination path */
+struct art {                 /* Article */
+  char title[CSG_NAME_MAX];  /* Article title */
+  char date[CSG_NAME_MAX];    /* Article date */
+  char name[CSG_NAME_MAX];    /* file name */
+  char src[CSG_PATH_MAX];      /* Source path */
+  char dst[CSG_PATH_MAX];      /* Destination path */
 };
