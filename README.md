@@ -14,7 +14,7 @@ where `src` is a source directory with Markdown files and `dst` is a destination
 ### Installation
 Install `pandoc`, clone this repo, after that.  
 ```
-make && sudo make install
+cd src && make && sudo make install
 ```
-You can find your csg files under ~/.csg/  
+You can find your csg files under ~/.csg  
 See `man csg` for more info.
