@@ -238,7 +238,7 @@ void convert(struct art article) {
   char *convert = (char *) malloc(sizeof(char) * CSG_ARG_MAX);
   gen_pandoc_cmd(convert, article);
 
-  printf("%s\n", convert);
+  printf("converting %s:\n%s\n\n", article.src, convert);
 
   pid_t p = fork();
 
@@ -273,6 +273,7 @@ char *read_mp (char *filename) {
 }
 
 void gen_main_page(int nart, struct art *article, int src_size, char *path) {
+  printf("generating %s\n", path);
   char *hdata = read_mp(conf.mp_header);
   char *fdata = read_mp(conf.mp_footer);
 

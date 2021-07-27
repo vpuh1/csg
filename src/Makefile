@@ -1,8 +1,8 @@
-CC=gcc
-CFLAGS=-I.
+CC = gcc
+CFLAGS = -I.
 DEPS = csg.h config.h limits.h convert.h
 OBJ = csg.o config.o convert.o
-MAN_DIR = ./doc/
+MAN_DIR = ../doc/
 MAN_PAGE = csg.1
 PREFIX = /usr/local
 MANPREFIX = /usr/local/share/man
@@ -12,11 +12,10 @@ MANPREFIX = /usr/local/share/man
 
 csg: $(OBJ)
 	$(CC) -o csg $(OBJ) $(CFLAGS)
-	#gzip <$(MAN_DIR)$(MAN_PAGE) >$(MAN_DIR)$(MAN_PAGE).gz
 	mkdir -p $(HOME)/.csg
-	cp config/ucsgrc $(HOME)/.csg/csgrc
-	cp -r html $(HOME)/.csg/html
-	cp -r css $(HOME)/.csg/css
+	cp ../config/ucsgrc $(HOME)/.csg/csgrc
+	cp -r ../html $(HOME)/.csg/html
+	cp -r ../css $(HOME)/.csg/css
 
 .PHONY: clean
 
@@ -35,14 +34,14 @@ install: csg
 	cp $(MAN_DIR)$(MAN_PAGE) $(DESTDIR)$(MANPREFIX)/man1/csg.1
 	chmod 644 ${DESTDIR}${MANPREFIX}/man1/csg.1
 	mkdir -p /etc/csg
-	cp config/scsgrc /etc/csg/csgrc
-	cp -r html /etc/csg/
-	cp -r css /etc/csg/
+	cp ../config/scsgrc /etc/csg/csgrc
+	cp -r ../html /etc/csg/
+	cp -r ../css /etc/csg/
 
 test: csg
-	mkdir -p test
-	./test.sh
-	./csg test test
+	mkdir -p ../test
+	../test.sh
+	./csg ../test ../test
 
 .PHONY: uninstall
 

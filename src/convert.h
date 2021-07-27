@@ -1,5 +1,5 @@
 #ifndef CONVERT_H
-#define COVERT_H
+#define CONVERT_H
 
 char *get_relative_path(int n, char *path);
 char *get_absolute_path(char *prefix, char *path);
