@@ -16,12 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef CSG_H
+#define CSG_H
+
 #include "limits.h"
 
-struct art {                 /* Article */
-  char title[CSG_NAME_MAX];  /* Article title */
-  char date[CSG_NAME_MAX];    /* Article date */
-  char name[CSG_NAME_MAX];    /* file name */
-  char src[CSG_PATH_MAX];      /* Source path */
-  char dst[CSG_PATH_MAX];      /* Destination path */
+struct art {                 		/* Article */
+	char title[CSG_NAME_MAX];  	/* Article title */
+	char date[CSG_NAME_MAX];    	/* Article date */
+	char name[CSG_NAME_MAX];    	/* file name */
+	char src[CSG_PATH_MAX];      	/* Source path */
+	char dst[CSG_PATH_MAX]; 	/* Destination path */
 };
+
+#endif /* CSG_H */
