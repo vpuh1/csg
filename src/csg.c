@@ -193,7 +193,7 @@ void copy_dirs(char *src_dir, int src_size, char *dst_dir)
 				fprintf(stderr, "csg: cannot fork process: %d\n", p);
 				exit(1);
 			} else if(p == 0) {
-				execlp("cp", "cp", "-r", dir, copied_dir, NULL);
+				execlp("cp", "cp", "-rT", dir, copied_dir, NULL);
 			}
 			k++;
 			beg = end + 1;

@@ -18,7 +18,7 @@ h1, h2, h3, h4 {
 
 a { color: #88bbf2; text-decoration: none }
 a:hover { text-decoration: underline; }
-a:visited { color: #0000BB; }
+a:visited { color: #889bf2; }
 
 a.header {
   text-decoration: none;
