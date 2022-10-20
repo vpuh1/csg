@@ -334,17 +334,25 @@ int main(int argc, char **argv)
 		printf("\tdst: destination directory for converted files\n");
 		exit(1);
 	}
+	char *src_dir = (char *) malloc(sizeof(char) * CSG_PATH_MAX);
+	char *dst_dir = (char *) malloc(sizeof(char) * CSG_PATH_MAX);
+	
+	strncpy(src_dir, argv[1], 64);
+	strncpy(dst_dir, argv[2], 64);
+	if (src_dir[strlen(src_dir) - 1] != '/')
+		src_dir[strlen(src_dir)] = '/';
+	if (dst_dir[strlen(dst_dir) - 1] != '/')
+		dst_dir[strlen(dst_dir)] = '/';
 
 	init_config_values(&conf, conf_val);
 	open_config(&conf, conf_val);
 
 	/* list all .md files in src directory */
 	char *list_md = (char *) malloc(sizeof(char) * CSG_ARG_MAX);
-	sprintf(list_md, list_md_t, argv[1]);
+	sprintf(list_md, list_md_t, src_dir);
 
 	char *mp = (char *) malloc(sizeof(char) * CSG_PATH_MAX);
-
-	realpath(argv[2], mp);
+	realpath(dst_dir, mp);
 	int tmplen = strlen(mp);
 	mp[tmplen] = '/';
 	mp[tmplen + 1] = '\0';
@@ -365,10 +373,10 @@ int main(int argc, char **argv)
 			fprintf(stderr, "csg: missing date for %s!\n", article[i].src);
 	}
 
-	gen_dst(nart, article, argv[1], strlen(argv[1]), argv[2]);
+	gen_dst(nart, article, src_dir, strlen(src_dir), dst_dir);
 
-	copy_dirs(argv[1], strlen(argv[1]), argv[2]); 
-	rm_md_from_dir(argv[1], argv[2]);
+	copy_dirs(src_dir, strlen(src_dir), dst_dir); 
+	rm_md_from_dir(src_dir, dst_dir);
 
 	for(i = 0; i < nart; i++) {
 		convert(article[i]);
@@ -376,7 +384,7 @@ int main(int argc, char **argv)
 
 	sort_articles(nart, article);
 
-	gen_main_page(nart, article, strlen(argv[2]), mp);
+	gen_main_page(nart, article, strlen(dst_dir), mp);
 
 	free(list_md);
 	free(mp);
